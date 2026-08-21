@@ -1,0 +1,66 @@
+name: matcha_wallet
+description: A secure, minimalist Solana wallet.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+
+  # State management
+  provider: ^6.1.2
+
+  # Solana chain SDK (keypairs, RPC, SPL tokens, transactions)
+  solana: ^0.31.0
+
+  # Secure key storage (Keychain on iOS, Keystore on Android)
+  flutter_secure_storage: ^9.2.2
+
+  # Biometric unlock (Face ID / Touch ID / Fingerprint)
+  local_auth: ^2.3.0
+
+  # PIN entry UI
+  pin_code_fields: ^8.0.1
+
+  # Charts for the dashboard (allocation / value trend)
+  fl_chart: ^0.68.0
+
+  # Mnemonic generation / validation (BIP-39)
+  bip39: ^1.0.6
+
+  # Hashing for local PIN verification (never store raw PIN)
+  crypto: ^3.0.5
+
+  # HTTP client for price feed
+  http: ^1.2.2
+
+  # QR code for receive screen
+  qr_flutter: ^4.1.0
+  # QR scanning for send screen (paste-first, scan optional)
+  mobile_scanner: ^5.2.3
+
+  # Formatting numbers/dates
+  intl: ^0.19.0
+
+  # Clipboard / share
+  share_plus: ^10.0.2
+
+  # Env-style RPC endpoint config
+  flutter_dotenv: ^5.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  # Only list .env here if it exists in your working copy — Flutter's
+  # asset bundler errors on a missing file. Codemagic builds skip .env
+  # entirely and rely on --dart-define, so leave this commented for CI.
+  # assets:
+  #   - .env

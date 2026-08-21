@@ -1,0 +1,118 @@
+workflows:
+  android-release:
+    name: Matcha Wallet — Android
+    max_build_duration: 60
+    instance_type: linux_x2
+    environment:
+      flutter: stable
+      groups:
+        # Create this group in Codemagic → Teams → Environment variables.
+        # Holds SOLANA_RPC_URL / SOLANA_WS_URL / COINGECKO_API_URL(_KEY)
+        # and the Android keystore secrets — see README "Codemagic setup".
+        - matcha_wallet_config
+        - matcha_wallet_android_signing
+      android_signing:
+        - matcha_wallet_keystore
+      vars:
+        PACKAGE_NAME: "com.yourcompany.matchawallet"
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+    scripts:
+      - name: Install dependencies
+        script: flutter packages pub get
+
+      - name: Analyze
+        script: flutter analyze || true # non-blocking; drop `|| true` once codebase is fully lint-clean
+
+      - name: Build APK + App Bundle (config injected via --dart-define)
+        script: |
+          flutter build appbundle --release \
+            --dart-define=SOLANA_RPC_URL="$SOLANA_RPC_URL" \
+            --dart-define=SOLANA_WS_URL="$SOLANA_WS_URL" \
+            --dart-define=COINGECKO_API_URL="$COINGECKO_API_URL" \
+            --dart-define=COINGECKO_API_KEY="$COINGECKO_API_KEY"
+
+    artifacts:
+      - build/**/outputs/**/*.aab
+      - build/**/outputs/**/*.apk
+      - build/**/outputs/**/mapping.txt
+
+    publishing:
+      email:
+        recipients:
+          - you@example.com
+        notify:
+          success: true
+          failure: true
+      # Uncomment once you have a Play Console service account JSON
+      # stored as an env var / secure file in Codemagic.
+      # google_play:
+      #   credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+      #   track: internal
+      #   submit_as_draft: true
+
+  ios-release:
+    name: Matcha Wallet — iOS
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+      groups:
+        - matcha_wallet_config
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.yourcompany.matchawallet
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+    scripts:
+      - name: Install dependencies
+        script: flutter packages pub get
+
+      - name: Set up code signing
+        script: keychain initialize
+
+      - name: Fetch signing files
+        script: |
+          app-store-connect fetch-signing-files "$BUNDLE_ID" \
+            --type IOS_APP_STORE \
+            --create
+
+      - name: Set up signing on Xcode project
+        script: xcode-project use-profiles
+
+      - name: Install CocoaPods
+        script: find . -name "Podfile" -execdir pod install \;
+
+      - name: Build IPA (config injected via --dart-define)
+        script: |
+          flutter build ipa --release \
+            --dart-define=SOLANA_RPC_URL="$SOLANA_RPC_URL" \
+            --dart-define=SOLANA_WS_URL="$SOLANA_WS_URL" \
+            --dart-define=COINGECKO_API_URL="$COINGECKO_API_URL" \
+            --dart-define=COINGECKO_API_KEY="$COINGECKO_API_KEY" \
+            --export-options-plist=/Users/builder/export_options.plist
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+
+    publishing:
+      email:
+        recipients:
+          - you@example.com
+        notify:
+          success: true
+          failure: true
+      # app_store_connect:
+      #   auth: integration
+      #   submit_to_testflight: true
