@@ -14,7 +14,7 @@ workflows:
       android_signing:
         - matcha_wallet_keystore
       vars:
-        PACKAGE_NAME: "com.yourcompany.matchawallet"
+        PACKAGE_NAME: "com.novacore.matchawallet"
     triggering:
       events:
         - push
@@ -44,7 +44,7 @@ workflows:
     publishing:
       email:
         recipients:
-          - you@example.com
+          - jamesbryllefahardo.com
         notify:
           success: true
           failure: true
@@ -67,7 +67,7 @@ workflows:
         - matcha_wallet_config
       ios_signing:
         distribution_type: app_store
-        bundle_identifier: com.yourcompany.matchawallet
+        bundle_identifier: com.novacore.matchawallet
     triggering:
       events:
         - push
@@ -109,7 +109,7 @@ workflows:
     publishing:
       email:
         recipients:
-          - you@example.com
+          - jamesbryllefahardo.com
         notify:
           success: true
           failure: true
