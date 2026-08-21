@@ -44,7 +44,7 @@ workflows:
     publishing:
       email:
         recipients:
-          - jamesbryllefahardo.com
+          - jamesbryllefahardo@gmail.com
         notify:
           success: true
           failure: true
@@ -109,7 +109,7 @@ workflows:
     publishing:
       email:
         recipients:
-          - jamesbryllefahardo.com
+          - jamesbryllefahardo@gmail.com
         notify:
           success: true
           failure: true
